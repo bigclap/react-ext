@@ -5,41 +5,8 @@ import * as axios from 'axios';
 // eslint-disable-next-line no-undef
 const uid = chrome.runtime.id;
 
-
-/*
 // TODO ADD VIDEOS EXTENDED STATISTICS likes/dislakes comments count
-const getVideoInfo = async (channelId) => {
 
-const playlistId = channelResp.contentDetails.relatedPlaylists.uploads;
-let videos = [];
-const getVideos = async (nextPageToken = '') => {
-const response = await axios.get(youtubeV3 + '/playlistItems',
-  {
-    params: {
-      key: YOUTUBE_API3_KEY,
-      playlistId,
-      part: 'snippet',
-      maxResults: 50,
-      pageToken: nextPageToken,
-    },
-  });
-const videosByIds = await axios.get(youtubeV3 + '/videos',
-  {
-    params: {
-      key: YOUTUBE_API3_KEY,
-      part: 'statistics',
-      id: response.data.items.map(e => e.snippet.resourceId.videoId).join(','),
-    },
-  });
-videos = videos.concat(videosByIds.data.items);
-if (response.data.nextPageToken) {
-  await getVideos(response.data.nextPageToken);
-}
-};
-await getVideos();
-const awgViews = 0;
-};
-*/
 const youtubeV3 = 'https://www.googleapis.com/youtube/v3';
 
 const getLastVideoDate = async (playlistId) => {
