@@ -1,0 +1,11 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    min-width: 250px;
+    max-width: 500px;
+}
+
+.form > * {
+    margin-bottom: 1em !important;
+}
