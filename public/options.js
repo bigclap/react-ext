@@ -22,7 +22,7 @@ function saveOptions() {
 function restoreOptions() {
   // Use default value color = 'red' and likesColor = true.
   chrome.storage.sync.get({
-    YOUTUBE_API3_KEY: 'AIzaSyDHI7F6S96XljbMs7N7IsN96f686CvD3CE',
+    YOUTUBE_API3_KEY: 'AIzaSyCiKee1Aan7PvmXVFKDvI018GO9Cx6Itoo',
     BACKEND_HOST: 'http://208.69.117.88:3000/v1',
   }, (items) => {
     document.getElementById('api_key').value = items.YOUTUBE_API3_KEY;

@@ -105,6 +105,7 @@ class EnhancedTable extends React.Component {
   componentDidMount = () => {
     this.loadSearches();
   };
+
   loadSearches = async () => {
     const searchParams = new URLSearchParams(window.location.search);
     try {
@@ -116,6 +117,7 @@ class EnhancedTable extends React.Component {
       console.error(e);
     }
   };
+
   handleRequestSort = (event, property) => {
     const orderBy = property;
     let order = 'desc';
