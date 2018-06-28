@@ -58,7 +58,7 @@ class Index extends React.Component {
   };
 
   sendForm = () => {
-    if (this.state.keyword.length > 4 && this.state.searchLimit > 10) {
+    if (this.state.keyword.length > 2 && this.state.searchLimit > 10) {
       this.setState({
         inProgress: true,
       });
