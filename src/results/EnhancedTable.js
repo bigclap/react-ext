@@ -92,7 +92,6 @@ EnhancedTableHead.propTypes = {
   onRequestSort: PropTypes.func.isRequired,
   order: PropTypes.string.isRequired,
   orderBy: PropTypes.string.isRequired,
-  rowCount: PropTypes.number.isRequired,
 };
 
 const styles = theme => ({
@@ -114,6 +113,7 @@ class EnhancedTable extends React.Component {
         this.setState({ data: data.channels });
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e);
     }
   };

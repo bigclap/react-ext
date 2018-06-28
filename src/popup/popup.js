@@ -3,6 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import {
   Button,
+  FormControl,
   FormGroup,
   InputLabel,
   List,
@@ -40,7 +41,7 @@ class Index extends React.Component {
     });
   };
 
-  componentDidMount = () => {
+  componentWillMount = () => {
     this.setState({
       inProgress: !!backgroundConnection.eventSubscriber,
     });
@@ -51,14 +52,18 @@ class Index extends React.Component {
     this.setState({
       inProgress: false,
     });
-    console.log(result);
     if (result && result.group) {
-      this.setState({ searchesList: [...this.state.searchesList, result.group] });
+      const { searchesList } = this.state;
+      searchesList[result.group.id] = result.group;
+      this.setState({
+        searchesList,
+      });
     }
   };
 
   sendForm = () => {
     if (this.state.keyword.length > 2 && this.state.searchLimit > 10) {
+      backgroundConnection.eventSubscriber = null;
       this.setState({
         inProgress: true,
       });
@@ -73,7 +78,11 @@ class Index extends React.Component {
 
   loadSearches = async () => {
     const { data } = await axios.get(`${BACKEND_HOST}/groups`, { params: { uid } });
-    this.setState({ searchesList: data.groups });
+    const searchesList = {};
+    data.groups.forEach((group) => {
+      searchesList[group.id] = group;
+    });
+    this.setState({ searchesList });
   };
 
   render() {
@@ -86,14 +95,21 @@ class Index extends React.Component {
         <FormGroup className='form'>
           <TextField label="Find this keywords" margin="normal" value={this.state.keyword}
                      onChange={this.handleKeyword}
-                     type='text'/>
-          <div style={{ textAlign: 'left' }}>
-            <InputLabel>{
+                     type='text'
+                     disabled={this.state.inProgress}
+                     required/>
+          <FormControl>
+            <InputLabel shrink={true} required>{
               `Chose search limit: ${this.state.searchLimit || ''}`
             }</InputLabel>
-            <Slider min={10} max={100} value={this.state.searchLimit} step={5}
-                    onChange={this.changeLimit}/>
-          </div>
+            <Slider min={10}
+                    max={100}
+                    value={this.state.searchLimit}
+                    step={5}
+                    style={{ margin: '20px 0 0 0' }}
+                    onChange={this.changeLimit}
+                    disabled={this.state.inProgress}/>
+          </FormControl>
           <Button variant="contained" type="button" color='primary' disabled={this.state.inProgress}
                   onClick={this.sendForm}>Search on
             YouTube</Button>
@@ -108,7 +124,7 @@ class Index extends React.Component {
           return null;
         })()}
         <List component="nav">
-          {this.state.searchesList ? this.state.searchesList.map((group) => (
+          {this.state.searchesList ? Object.values(this.state.searchesList).map((group) => (
               <a target='_blank'
                  href={`chrome-extension://${uid}/results.html?group=${group.id}&keyword=${group.keyword}`}><ListItem
                 button><ListItemText>{group.keyword}</ListItemText></ListItem></a>))

@@ -5,11 +5,6 @@ import { uid } from '../popup/backgroundConnection';
 // TODO ADD VIDEOS EXTENDED STATISTICS likes/dislakes comments count
 const youtubeV3 = 'https://www.googleapis.com/youtube/v3';
 
-// eslint-disable-next-line no-undef
-chrome.windows.onFocusChanged.addListener(e => {
-  window.eventSubscriber = null;
-});
-
 const getLastVideoDate = async (playlistId) => {
   const response = await axios.get(`${youtubeV3}/playlistItems`,
     {
@@ -50,8 +45,8 @@ const getKeywordVideoCount = async (channelId, keyword) => {
 
 window.eventSubscriber = null;
 
-window.eventSubscribe = (callback, keyword) => {
-  window.eventSubscriber = { event: callback, keyword };
+window.eventSubscribe = (callback) => {
+  window.eventSubscriber = { event: callback };
 };
 
 const progress = (state) => {
@@ -75,6 +70,7 @@ window.searchVideos = async (keyword, limit) => {
   const state = {
     progress: 0,
     limit,
+    keyword,
   };
   progress(state);
   const findChannels = async (nextPageToken) => {
@@ -137,11 +133,12 @@ window.searchVideos = async (keyword, limit) => {
     state.progress = state.limit;
     progress(state);
     const out = await sendChannelsToServer(channelsInfo, keyword);
-    window.eventSubscribers = null;
+    window.eventSubscriber = null;
     return out;
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.error(e);
-    window.eventSubscribers = null;
+    window.eventSubscriber = null;
     return null;
   }
 };
