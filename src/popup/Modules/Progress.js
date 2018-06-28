@@ -1,6 +1,6 @@
 import React from 'react';
 import { LinearProgress } from '@material-ui/core';
-import backgroundConnection from '../backgroundConnection';
+import { backgroundConnection } from '../backgroundConnection';
 
 export default class Progress extends React.Component {
   state = {

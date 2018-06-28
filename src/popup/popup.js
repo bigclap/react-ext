@@ -1,15 +1,22 @@
-/* eslint-disable no-undef */
 import React from 'react';
+import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import {
-  InputLabel, Button, Typography, TextField, FormControl, FormGroup,
-} from '@material-ui/core';
+  Button,
+  FormGroup,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemText,
+  TextField,
+  Typography,
+} from '@material-ui/core/';
 import Slider from '@material-ui/lab/Slider';
-import { withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import withRoot from './withRoot';
-import backgroundConnection from './backgroundConnection';
+import { backgroundConnection, uid } from './backgroundConnection';
 import Progress from './Modules/Progress';
+import { BACKEND_HOST } from '../config';
 
 
 const styles = theme => ({
@@ -22,6 +29,7 @@ const styles = theme => ({
 class Index extends React.Component {
   state = {
     searchLimit: 0,
+    searchesList: [],
     keyword: '',
     inProgress: false,
   };
@@ -44,6 +52,9 @@ class Index extends React.Component {
       inProgress: false,
     });
     console.log(result);
+    if (result && result.group) {
+      this.setState({ searchesList: [...this.state.searchesList, result.group] });
+    }
   };
 
   sendForm = () => {
@@ -61,8 +72,8 @@ class Index extends React.Component {
   };
 
   loadSearches = async () => {
-    const { data } = axios.get(`${BACKEND_HOST}/groups`, { params: { uid: chrome.runtime.id } });
-    this.setState({ searchesList: data });
+    const { data } = await axios.get(`${BACKEND_HOST}/groups`, { params: { uid } });
+    this.setState({ searchesList: data.groups });
   };
 
   render() {
@@ -96,6 +107,14 @@ class Index extends React.Component {
           }
           return null;
         })()}
+        <List component="nav">
+          {this.state.searchesList ? this.state.searchesList.map((group) => (
+              <a target='_blank'
+                 href={`chrome-extension://${uid}/results.html?group=${group.id}&keyword=${group.keyword}`}><ListItem
+                button><ListItemText>{group.keyword}</ListItemText></ListItem></a>))
+            : null
+          }
+        </List>
       </div>
     );
   }

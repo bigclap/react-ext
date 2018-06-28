@@ -1,5 +1,3 @@
-
-
 // Do this as the first thing so that any code reading it knows the right env.
 process.env.BABEL_ENV = 'production';
 process.env.NODE_ENV = 'production';
@@ -35,7 +33,7 @@ const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
 const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
 
 // Warn and crash if required files are missing
-if (!checkRequiredFiles([paths.appHtml, paths.bgAppHtml])) {
+if (!checkRequiredFiles([paths.appHtml, paths.bgAppHtml, paths.resultsAppHtml])) {
   process.exit(1);
 }
 
@@ -121,7 +119,7 @@ function build(previousFileSizes) {
       if (
         process.env.CI
         && (typeof process.env.CI !== 'string'
-          || process.env.CI.toLowerCase() !== 'false')
+        || process.env.CI.toLowerCase() !== 'false')
         && messages.warnings.length
       ) {
         console.log(
@@ -144,6 +142,8 @@ function build(previousFileSizes) {
 function copyPublicFolder() {
   fs.copySync(paths.appPublic, paths.appBuild, {
     dereference: true,
-    filter: file => file !== paths.appHtml && file !== paths.bgAppHtml,
+    filter: file => file !== paths.appHtml
+      && file !== paths.bgAppHtml
+      && file !== paths.resultsAppHtml,
   });
 }

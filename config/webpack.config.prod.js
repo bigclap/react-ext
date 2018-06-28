@@ -59,6 +59,7 @@ module.exports = {
   entry: {
     popup: [paths.appIndexJs, require.resolve('./polyfills')],
     background: paths.bgAppIndexJs,
+    results: paths.resultsAppIndexJs,
   },
   output: {
     // The build folder.
@@ -247,7 +248,7 @@ module.exports = {
       inject: true,
       template: paths.appHtml,
       filename: path.basename(paths.appHtml),
-      excludeChunks: ['background'],
+      excludeChunks: ['background', 'results'],
       minify: {
         removeComments: true,
         collapseWhitespace: true,
@@ -262,12 +263,30 @@ module.exports = {
       },
     }),
     new InterpolateHtmlPlugin(env.raw),
-
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.bgAppHtml,
       filename: path.basename(paths.bgAppHtml),
-      excludeChunks: ['popup'],
+      excludeChunks: ['popup', 'results'],
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeRedundantAttributes: true,
+        useShortDoctype: true,
+        removeEmptyAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        keepClosingSlash: true,
+        minifyJS: true,
+        minifyCSS: true,
+        minifyURLs: true,
+      },
+    }),
+    new InterpolateHtmlPlugin(env.raw),
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: paths.resultsAppHtml,
+      filename: path.basename(paths.resultsAppHtml),
+      excludeChunks: ['popup', 'background'],
       minify: {
         removeComments: true,
         collapseWhitespace: true,

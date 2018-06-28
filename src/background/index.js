@@ -1,13 +1,14 @@
-/* eslint-disable no-undef */
-/** eslint-disable no-console,no-await-in-loop,guard-for-in,no-restricted-syntax */
 import * as axios from 'axios';
-
-// eslint-disable-next-line no-undef
-const uid = chrome.runtime.id;
+import { BACKEND_HOST, YOUTUBE_API3_KEY } from '../config';
+import { uid } from '../popup/backgroundConnection';
 
 // TODO ADD VIDEOS EXTENDED STATISTICS likes/dislakes comments count
-
 const youtubeV3 = 'https://www.googleapis.com/youtube/v3';
+
+// eslint-disable-next-line no-undef
+chrome.windows.onFocusChanged.addListener(e => {
+  window.eventSubscriber = null;
+});
 
 const getLastVideoDate = async (playlistId) => {
   const response = await axios.get(`${youtubeV3}/playlistItems`,
@@ -66,7 +67,7 @@ const sendChannelsToServer = async (result, keyword) => {
     data: result,
   });
 
-  return { gid: group.id, channels };
+  return { group, channels };
 };
 
 window.searchVideos = async (keyword, limit) => {
@@ -77,12 +78,14 @@ window.searchVideos = async (keyword, limit) => {
   };
   progress(state);
   const findChannels = async (nextPageToken) => {
+    const lowLimit = limit > 50 ? 50 : limit;
+    const maxResults = limit - state.progress > 50 ? lowLimit : limit - Math.floor(state.progress);
     const response = await axios.get(`${youtubeV3}/search`,
       {
         params: {
           key: YOUTUBE_API3_KEY,
           pageToken: nextPageToken,
-          maxResults: limit > 50 ? 50 : limit,
+          maxResults,
           part: 'snippet',
           type: 'video',
           q: keyword,
@@ -90,13 +93,14 @@ window.searchVideos = async (keyword, limit) => {
       });
 
     if (response.data && response.data.items) {
+      const OldIds = channelsInfo.map(e => e.channelId);
       const channelsResp = await axios.get(`${youtubeV3}/channels`,
         {
           params: {
             key: YOUTUBE_API3_KEY,
             id: response.data.items
               .map(e => e.snippet.channelId)
-              .filter((value, index, self) => self.indexOf(value) === index)
+              .filter((elem, pos, arr) => arr.indexOf(elem) === pos && OldIds.indexOf(elem) === -1)
               .join(','),
             part: 'statistics,snippet,contentDetails',
           },
@@ -128,8 +132,16 @@ window.searchVideos = async (keyword, limit) => {
       }
     }
   };
-  await findChannels();
-  const { channels, gid } = await sendChannelsToServer(channelsInfo, keyword);
-  window.eventSubscribers = null;
-  return { channels, gid };
+  try {
+    await findChannels();
+    state.progress = state.limit;
+    progress(state);
+    const out = await sendChannelsToServer(channelsInfo, keyword);
+    window.eventSubscribers = null;
+    return out;
+  } catch (e) {
+    console.error(e);
+    window.eventSubscribers = null;
+    return null;
+  }
 };

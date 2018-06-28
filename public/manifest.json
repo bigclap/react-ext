@@ -1,5 +1,5 @@
 {
-  "version": "0.0.1",
+  "version": "0.1.0",
   "name": "Youtube radar",
   "options_page": "options.html",
   "background": {
@@ -13,6 +13,7 @@
     "128": "/img/icon-128.png"
   },
   "permissions": [
+    "storage",
     "background",
     "clipboardRead",
     "tabs",

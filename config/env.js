@@ -81,8 +81,6 @@ function getClientEnvironment(publicUrl) {
     );
   // Stringify all values so we can feed into Webpack DefinePlugin
   const stringified = {
-    YOUTUBE_API3_KEY: 'AIzaSyCiKee1Aan7PvmXVFKDvI018GO9Cx6Itoo',
-    BACKEND_HOST: 'http://localhost:3000/v1',
     'process.env': Object.keys(raw).reduce((env, key) => {
       env[key] = JSON.stringify(raw[key]);
       return env;
